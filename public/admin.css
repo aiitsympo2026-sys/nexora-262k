@@ -1,0 +1,191 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(
+            circle at top,
+            #102a5e,
+            #030817 70%
+        );
+    color: white;
+    min-height: 100vh;
+}
+
+header {
+    padding: 25px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom:
+        1px solid
+        rgba(0, 200, 255, 0.3);
+}
+
+header h1 {
+    margin: 0;
+    color: #4ddcff;
+}
+
+header p {
+    color: #9ab6d9;
+}
+
+.home-btn {
+    text-decoration: none;
+    color: white;
+    border: 1px solid #32d6ff;
+    padding: 10px 18px;
+    border-radius: 8px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    padding: 30px 8%;
+}
+
+.stat-card {
+    flex: 1;
+    background:
+        rgba(255, 255, 255, 0.06);
+    border:
+        1px solid
+        rgba(0, 220, 255, 0.3);
+    padding: 25px;
+    border-radius: 15px;
+}
+
+.stat-card h3 {
+    color: #9bc8ff;
+}
+
+.stat-card h2 {
+    color: #44dcff;
+    font-size: 35px;
+}
+
+.dashboard-section {
+    margin: 25px 8%;
+    padding: 25px;
+    background:
+        rgba(255, 255, 255, 0.05);
+    border:
+        1px solid
+        rgba(0, 200, 255, 0.2);
+    border-radius: 15px;
+}
+
+.dashboard-section h2 {
+    color: #4ddcff;
+}
+
+select,
+input {
+    padding: 12px;
+    border-radius: 8px;
+    border:
+        1px solid
+        rgba(0, 200, 255, 0.4);
+    background: #07162f;
+    color: white;
+    margin: 8px;
+}
+
+select {
+    min-width: 250px;
+}
+
+.primary-btn,
+.save-btn,
+.delete-btn {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.primary-btn,
+.save-btn {
+    background: #14b8d4;
+    color: white;
+}
+
+.delete-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    color: #4ddcff;
+}
+
+th,
+td {
+    padding: 14px;
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.1);
+    text-align: left;
+}
+
+.score-input {
+    width: 100px;
+}
+
+.winner-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.winner-card {
+    flex: 1;
+    min-width: 220px;
+    padding: 20px;
+    border-radius: 15px;
+    background:
+        linear-gradient(
+            135deg,
+            #102d5f,
+            #07152d
+        );
+    border:
+        1px solid
+        #1ad4ff;
+}
+
+.winner-card h2 {
+    margin-top: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 700px) {
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .stats {
+        flex-direction: column;
+    }
+
+}

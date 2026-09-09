@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Symposium Admin Dashboard
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="stars"></div>
+
+
+    <header>
+
+        <div>
+
+            <h1>
+                🚀 SYMPOSIUM ADMIN
+            </h1>
+
+            <p>
+                Registration & Score Management
+            </p>
+
+        </div>
+
+        <a
+            href="/"
+            class="home-btn"
+        >
+            ← Registration Page
+        </a>
+
+    </header>
+
+
+    <!-- DASHBOARD -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <h3>
+                TOTAL STUDENTS
+            </h3>
+
+            <h2 id="totalStudents">
+                0
+            </h2>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>
+                TOTAL EVENTS
+            </h3>
+
+            <h2 id="totalEvents">
+                0
+            </h2>
+
+        </div>
+
+    </section>
+
+
+    <!-- SCORE MANAGEMENT -->
+
+    <section class="dashboard-section">
+
+        <h2>
+            🏆 EVENT SCORE MANAGEMENT
+        </h2>
+
+
+        <select id="eventSelect">
+
+            <option value="">
+                Select Event
+            </option>
+
+        </select>
+
+
+        <button
+            id="loadParticipants"
+            class="primary-btn"
+        >
+
+            LOAD PARTICIPANTS
+
+        </button>
+
+
+        <div
+            id="scoreSection"
+            class="hidden"
+        >
+
+            <h3 id="selectedEventTitle"></h3>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Student
+                            </th>
+
+                            <th>
+                                College
+                            </th>
+
+                            <th>
+                                Department
+                            </th>
+
+                            <th>
+                                Score
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="participantsTable"
+                    >
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- WINNERS -->
+
+    <section
+        id="winnerSection"
+        class="dashboard-section"
+    >
+
+        <h2>
+            🏆 TOP 3 WINNERS
+        </h2>
+
+
+        <p id="winnerEvent"></p>
+
+
+        <div
+            id="winnerCards"
+            class="winner-container"
+        >
+
+            <p>
+                Select an event to view winners.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ALL PARTICIPANTS -->
+
+    <section class="dashboard-section">
+
+        <h2>
+            👨‍🎓 ALL REGISTERED STUDENTS
+        </h2>
+        <button
+    id="downloadExcel"
+    class="primary-btn"
+>
+    📥 DOWNLOAD EXCEL
+</button>
+
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by name, college or mobile..."
+        >
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+    <tr>
+
+        <th>
+            Name
+        </th>
+
+        <th>
+            College
+        </th>
+
+        <th>
+            Events
+        </th>
+
+        <th>
+            Food
+        </th>
+
+        <th>
+            Registration ID
+        </th>
+
+        <th>
+            Attendance
+        </th>
+
+         <th>
+            Payment
+        </th>
+
+        <th>
+            Delete
+        </th>
+
+    </tr>
+
+</thead>
+
+
+                <tbody
+                    id="registrationTable"
+                >
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <script src="admin.js"></script>
+
+</body>
+
+</html>

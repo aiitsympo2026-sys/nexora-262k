@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI & IT Symposium 2026</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+
+    <!-- =====================================
+         INTRO SCREEN
+    ====================================== -->
+
+    <div id="introScreen">
+
+        <!-- INTRO BACKGROUND -->
+        <div class="space-bg"></div>
+
+        <!-- INTRO STARS -->
+        <div class="intro-stars"></div>
+
+        <!-- GLOW BEHIND TEXT -->
+        <div class="glow-orbit"></div>
+
+
+        <!-- ROBOT -->
+        <img
+            src="images/robot.png"
+            class="intro-robot"
+            alt="AI Robot"
+        >
+
+
+        <!-- CENTER TEXT -->
+        <div class="intro-content">
+
+            <div class="intro-dept-small">
+                <span></span>
+
+                DEPARTMENT OF
+
+                <span></span>
+            </div>
+
+
+            <h1>
+
+                <span>AI</span>
+
+                
+
+            </h1>
+
+
+            <div class="tech-line">
+
+                <span></span>
+
+                <b>&</b>
+
+                <span></span>
+
+            </div>
+
+
+            <h2>IT</h2>
+
+        </div>
+
+
+        <!-- PRESENTS -->
+        <div class="intro-welcome">
+
+            PRESENTS
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         MAIN WEBSITE
+    ====================================== -->
+
+    <div id="mainContent">
+
+
+        <!-- STAR BACKGROUND -->
+
+        <div class="stars"></div>
+
+        <div class="stars stars2"></div>
+
+        <div class="stars stars3"></div>
+
+<!-- SIDE ORBITING ROBOTS -->
+<div class="side-robot left-robot">
+    <img src="images/robot.png" alt="AI Robot">
+</div>
+
+<div class="side-robot right-robot">
+    <img src="images/robot.png" alt="AI Robot">
+</div>
+
+        <!-- =====================================
+             HERO SECTION
+        ====================================== -->
+
+        <section class="hero">
+
+            <p class="dept-small">
+
+                DEPARTMENT OF
+
+            </p>
+
+
+            <h1 class="department-name">
+
+                <span>A</span>
+                <span>R</span>
+                <span>T</span>
+                <span>I</span>
+                <span>F</span>
+                <span>I</span>
+                <span>C</span>
+                <span>I</span>
+                <span>A</span>
+                <span>L</span>
+
+                <br>
+
+                <span>I</span>
+                <span>N</span>
+                <span>T</span>
+                <span>E</span>
+                <span>L</span>
+                <span>L</span>
+                <span>I</span>
+                <span>G</span>
+                <span>E</span>
+                <span>N</span>
+                <span>C</span>
+                <span>E</span>
+
+                <br>
+
+                <span>&</span>
+
+                <br>
+
+                <span>I</span>
+                <span>N</span>
+                <span>F</span>
+                <span>O</span>
+                <span>R</span>
+                <span>M</span>
+                <span>A</span>
+                <span>T</span>
+                <span>I</span>
+                <span>O</span>
+                <span>N</span>
+<br>
+                <span>T</span>
+                <span>E</span>
+                <span>C</span>
+                <span>H</span>
+                <span>N</span>
+                <span>O</span>
+                <span>L</span>
+                <span>O</span>
+                <span>G</span>
+                <span>Y</span>
+
+            </h1>
+
+
+            <h2 class="symposium-title">
+
+                NEXORA'26
+
+            </h2>
+
+
+            <p class="tagline">
+
+                INNOVATE • LEARN • COMPETE • WIN
+
+            </p>
+
+        </section>
+
+
+
+        <!-- =====================================
+             REGISTRATION FORM
+        ====================================== -->
+
+        <main class="registration-box">
+
+
+            <!-- FORM HEADING -->
+
+            <div class="form-heading">
+
+                <div class="heading-icon">
+
+                    ✦
+
+                </div>
+
+
+                <div>
+
+                    <h2>
+
+                        REGISTRATION FORM
+
+                    </h2>
+
+
+                    <p>
+
+                        Fill your details and be a part of our Symposium
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 FORM START
+            ====================================== -->
+
+            <form id="registrationForm">
+
+
+                <div class="form-grid">
+
+
+                    <!-- =====================================
+                         STUDENT DETAILS
+                    ====================================== -->
+
+                    <div class="form-column">
+
+                        <h3>
+
+                            👤 STUDENT DETAILS
+
+                        </h3>
+
+
+                        <div class="input-group">
+
+                            <label>
+
+                                Full Name *
+
+                            </label>
+
+
+                            <input
+    type="text"
+    id="fullName"
+    name="name"
+    placeholder="Enter your full name"
+    required
+>
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label>
+
+                                College Name *
+
+                            </label>
+
+
+                            <input
+    type="text"
+    id="collegeName"
+    name="college"
+    placeholder="Enter your college name"
+    required
+>
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label>
+
+                                Department *
+
+                            </label>
+
+
+                            <select
+    id="department"
+    name="department"
+    required
+    onchange="toggleOtherDepartment()"
+>
+    <option value="">Select Department</option>
+
+    <option value="AI & DS">AI & DS</option>
+    <option value="CSE">CSE</option>
+    <option value="IT">Information Technology</option>
+    <option value="ECE">ECE</option>
+    <option value="EEE">EEE</option>
+    <option value="MECH">Mechanical Engineering</option>
+    <option value="CIVIL">Civil Engineering</option>
+    <option value="MCA">MCA</option>
+    <option value="Other">Other</option>
+</select>
+
+<input
+    type="text"
+    id="otherDepartment"
+    placeholder="Enter your department"
+    style="display:none; margin-top:10px;"
+>
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label>
+
+                                Year of Study *
+
+                            </label>
+
+
+                            <select
+                                id="year"
+                                name="year"
+                                required
+                            >
+
+                                <option value="">
+
+                                    Select Year
+
+                                </option>
+
+                                <option value="1">
+
+                                    1st Year
+
+                                </option>
+
+                                <option value="2">
+
+                                    2nd Year
+
+                                </option>
+
+                                <option value="3">
+
+                                    3rd Year
+
+                                </option>
+
+                                <option value="4">
+
+                                    4th Year
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label>
+
+                                Email *
+
+                            </label>
+
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label>
+
+                                Mobile Number *
+
+                            </label>
+
+
+                            <input
+                                type="tel"
+                                id="mobile"
+                                name="mobile"
+                                placeholder="Enter 10 digit mobile number"
+                                pattern="[0-9]{10}"
+                                maxlength="10"
+                                required
+                            >
+
+                        </div>
+                        <div class="input-group">
+
+    <label>
+        Food Preference *
+    </label>
+
+    <div class="food-options">
+
+        <label>
+            <input
+                type="radio"
+                name="food"
+                value="Veg"
+                required
+            >
+
+            🥗 Veg
+
+        </label>
+
+
+        <label>
+            <input
+                type="radio"
+                name="food"
+                value="Non-Veg"
+            >
+
+            🍗 Non-Veg
+
+        </label>
+
+    </div>
+
+</div>
+
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         EVENT SELECTION
+                    ====================================== -->
+
+                    <div class="form-column">
+
+
+                        <h3>
+
+                            🏆 SELECT EVENT(S)
+
+                        </h3>
+
+
+
+                        <!-- EVENT TABS -->
+
+                        <div class="tabs">
+
+                            <button
+                                type="button"
+                                class="tab active"
+                                id="technicalTab"
+                            >
+
+                                💻 Technical
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="tab"
+                                id="nonTechnicalTab"
+                            >
+
+                                🎭 Non-Technical
+
+                            </button>
+
+                        </div>
+
+
+
+                        <!-- TECHNICAL EVENTS -->
+
+                        <div
+                            class="events"
+                            id="technicalEvents"
+                        >
+
+                            <h4>
+
+                                💻 TECHNICAL EVENTS
+
+                            </h4>
+
+
+                            <div class="event-item">
+
+                                <label>
+
+                                    <input
+                                        type="checkbox"
+                                        name="events"
+                                        value="Perspecta"
+                                    >
+
+                                    Perspecta
+
+                                </label>
+
+
+                              
+                            </div>
+
+
+
+                            <div class="event-item">
+
+                                <label>
+
+                                    <input
+                                        type="checkbox"
+                                        name="events"
+                                        value=" Bitcrux"
+                                    >
+
+                                    Bitcrux
+
+                                </label>
+
+
+
+                            </div>
+
+
+
+                            <div class="event-item">
+
+                                <label>
+
+                                    <input
+                                        type="checkbox"
+                                        name="events"
+                                        value="Vizzard"
+                                    >
+
+                                    Vizzard
+
+                                </label>
+
+
+                                
+
+                            
+
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- NON TECHNICAL EVENTS -->
+
+                        <div
+                            class="events hidden"
+                            id="nonTechnicalEvents"
+                        >
+
+                            <h4 class="pink-title">
+
+                                🎭 NON-TECHNICAL EVENTS
+
+                            </h4>
+
+
+                            <div class="event-item">
+
+                                <label>
+
+                                    <input
+                                        type="checkbox"
+                                        name="events"
+                                        value="Mystery Mission"
+                                    >
+
+                                    Mystery Mission
+
+                                </label>
+
+                            </div>
+
+
+
+                            <div class="event-item">
+
+                                <label>
+
+                                    <input
+                                        type="checkbox"
+                                        name="events"
+                                        value="Voice Clash"
+                                    >
+
+                                    Voice Clash
+
+                                </label>
+
+                            </div>
+
+
+
+                            <div class="event-item">
+
+                                <label>
+
+                                    <input
+                                        type="checkbox"
+                                        name="events"
+                                        value="Mind Track"
+                                    >
+
+                                    Mind Track
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         PAYMENT
+                    ====================================== -->
+
+                    <div class="form-column payment-column">
+
+
+                        <h3>
+
+                            💳 PAYMENT DETAILS
+
+                        </h3>
+
+
+
+                        <div class="payment-option">
+
+                            <label>
+
+                                <input
+                                    type="radio"
+                                    name="payment"
+                                    value="Offline"
+                                    required
+                                >
+
+                                💵 Offline Payment
+
+                            </label>
+
+                        </div>
+
+
+
+                        <div class="payment-option">
+
+                            <label>
+
+                                <input
+                                    type="radio"
+                                    name="payment"
+                                    value="Online"
+                                    id="onlinePayment"
+                                >
+
+                                💳 Online Payment
+
+                            </label>
+
+                        </div>
+
+
+
+                        <!-- QR PAYMENT AREA -->
+
+                        <div
+                            id="qrPaymentBox"
+                            class="hidden"
+                        >
+
+
+                            <div class="upload-box">
+
+                                <p>
+
+                                    📱
+
+                                </p>
+
+
+                                <h4>
+
+                                    Scan & Pay
+
+                                </h4>
+
+
+                                <!-- QR IMAGE -->
+
+                            
+                              <a
+    href="upi://pay?pa=shalinir121105@okaxis&pn=NEXORA%202026&am=200&cu=INR"
+    style="display:block; text-align:center;"
+>
+    <img
+        src="images/qr.png"
+        alt="Payment QR Code"
+        id="paymentQR"
+        style="
+            width:180px;
+            max-width:100%;
+            cursor:pointer;
+            margin:15px auto;
+            display:block;
+        "
+    >
+      💳 Click here to Pay ₹200
+</a>
+
+
+                                <small>
+
+                                    Scan the QR code using GPay,
+                                    PhonePe or any UPI App
+
+                                </small>
+
+                            </div>
+
+
+
+                            <div class="input-group">
+
+                                <label>
+
+                                    Transaction ID *
+
+                                </label>
+
+
+                                <input
+    type="text"
+    id="transactionId"
+    name="transactionId"
+    placeholder="Enter Transaction ID"
+    inputmode="numeric"
+    pattern="[0-9]{12}"
+    minlength="12"
+    maxlength="12"
+    oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,12)"
+>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="secure-box">
+
+                            <div>
+
+                                🔒
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+
+                                    Secure Registration
+
+                                </strong>
+
+
+                                <p>
+
+                                    Your details are securely stored.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- REGISTER BUTTON -->
+
+                <button
+                    type="submit"
+                    class="register-btn"
+                >
+
+                    🚀 REGISTER NOW
+
+                </button>
+
+
+            </form>
+
+
+        </main>
+
+
+
+        <!-- =====================================
+             FOOTER
+        ====================================== -->
+
+        <footer>
+
+            © 2026 NEXORA |
+            Department of AI & IT |
+            All Rights Reserved
+
+        </footer>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         EVENT INFO MODAL
+    ====================================== -->
+
+    <div
+        id="eventModal"
+        class="modal hidden"
+    >
+
+
+        <div class="modal-content">
+
+
+            <button
+                class="close-btn"
+                id="closeModal"
+                type="button"
+            >
+
+                ×
+
+            </button>
+
+
+            <h2 id="modalTitle">
+
+                Event Details
+
+            </h2>
+
+
+            <div class="modal-line"></div>
+
+
+            <p id="modalDescription">
+
+                Event information will appear here.
+
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         SUCCESS MODAL
+    ====================================== -->
+
+    <div
+        id="successModal"
+        class="modal hidden"
+    >
+
+
+        <div class="modal-content success">
+
+
+            <div class="success-icon">
+
+                ✓
+
+            </div>
+
+
+            <h3>
+
+                REGISTRATION SUCCESSFUL!
+
+            </h3>
+
+
+            <p>
+
+                Your registration has been submitted successfully.
+
+            </p>
+
+
+            <button
+                type="button"
+                id="successCloseBtn"
+            >
+
+                OK
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>
