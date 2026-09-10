@@ -1,12 +1,9 @@
-const dns = require("dns");
 const XLSX = require("xlsx");
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 const crypto = require("crypto");
-
-
 const multer = require("multer");
 
 const Registration = require("./models/Registration");
@@ -14,12 +11,12 @@ const Registration = require("./models/Registration");
 dotenv.config();
 
 const app = express();
+
 // =====================================
 // ADMIN AUTHENTICATION
 // =====================================
 
 function createAdminToken() {
-
     const payload = JSON.stringify({
         admin: true,
         time: Date.now()
@@ -40,9 +37,7 @@ function createAdminToken() {
     return encodedPayload + "." + signature;
 }
 
-
 function verifyAdminToken(token) {
-
     if (!token) {
         return false;
     }
@@ -69,7 +64,6 @@ function verifyAdminToken(token) {
     }
 
     try {
-
         const data =
             JSON.parse(
                 Buffer.from(
@@ -88,19 +82,12 @@ function verifyAdminToken(token) {
 
         return data.admin === true;
 
-    }
-
-    catch {
-
+    } catch {
         return false;
-
     }
-
 }
 
-
 function adminAuth(req, res, next) {
-
     const cookies =
         req.headers.cookie || "";
 
@@ -113,27 +100,20 @@ function adminAuth(req, res, next) {
         match ? match[1] : null;
 
     if (!verifyAdminToken(token)) {
-
         return res.status(401).json({
-
             success: false,
-
             message: "Unauthorized"
-
         });
-
     }
 
     next();
-
 }
+
+// =====================================
+// MULTER
+// =====================================
+
 const upload = multer();
-
-
-
-const PORT = process.env.PORT || 5000;
-
-
 
 // =====================================
 // MIDDLEWARE
@@ -153,63 +133,151 @@ app.use(
     )
 );
 
+// =====================================
+// MONGOOSE SETTINGS
+// =====================================
 
+// IMPORTANT FOR VERCEL
+// Do not keep MongoDB operations waiting
+// in Mongoose's internal buffer.
+mongoose.set(
+    "bufferCommands",
+    false
+);
 
 // =====================================
 // MONGODB CONNECTION
+// VERCEL SERVERLESS SAFE
 // =====================================
 
-mongoose
-    .connect(process.env.MONGODB_URI, {
-        serverSelectionTimeoutMS: 10000,
-        connectTimeoutMS: 10000,
-        socketTimeoutMS: 10000,
-        family: 4
-    })
-    
-    .then(() => {
-        console.log(
-            "MongoDB Connected Successfully"
+let mongoConnectionPromise = null;
+
+async function connectDB() {
+
+    // Already connected
+    if (
+        mongoose.connection.readyState === 1
+    ) {
+        return;
+    }
+
+    // If a connection is currently in progress
+    if (
+        mongoose.connection.readyState === 2 &&
+        mongoConnectionPromise
+    ) {
+        await mongoConnectionPromise;
+        return;
+    }
+
+    // Environment variable check
+    if (!process.env.MONGODB_URI) {
+        throw new Error(
+            "MONGODB_URI environment variable is missing"
         );
-    })
-    .catch((error) => {
-        console.log(
-            "MongoDB Connection Error:",
-            error.message
-        );
-    });
-    app.get("/api/test-db", async (req, res) => {
-    try {
-        if (mongoose.connection.readyState !== 1) {
+    }
+
+    // Create new connection
+    mongoConnectionPromise =
+        mongoose
+            .connect(
+                process.env.MONGODB_URI,
+                {
+                    serverSelectionTimeoutMS: 30000,
+                    connectTimeoutMS: 30000,
+                    socketTimeoutMS: 30000,
+
+                    // Force IPv4 for Vercel
+                    family: 4,
+
+                    // Keep connection pool small
+                    // for serverless environment
+                    maxPoolSize: 10,
+                    minPoolSize: 0
+                }
+            )
+            .then(() => {
+
+                console.log(
+                    "MongoDB Connected Successfully"
+                );
+
+            })
+            .catch((error) => {
+
+                mongoConnectionPromise = null;
+
+                console.error(
+                    "MongoDB Connection Error:",
+                    error.message
+                );
+
+                throw error;
+            });
+
+    await mongoConnectionPromise;
+}
+
+// =====================================
+// DATABASE TEST
+// =====================================
+
+app.get(
+    "/api/test-db",
+    async (req, res) => {
+
+        try {
+
+            await connectDB();
+
+            if (
+                !mongoose.connection.db
+            ) {
+                throw new Error(
+                    "MongoDB database object is unavailable"
+                );
+            }
+
+            await mongoose.connection.db.command({
+                ping: 1
+            });
+
+            return res.json({
+
+                success: true,
+
+                message:
+                    "MongoDB Connected Successfully",
+
+                readyState:
+                    mongoose.connection.readyState
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "DB TEST ERROR:",
+                error.message
+            );
+
             return res.status(500).json({
+
                 success: false,
-                message: "MongoDB is not connected",
-                readyState: mongoose.connection.readyState
+
+                message:
+                    "MongoDB Connection Failed",
+
+                error:
+                    error.message,
+
+                readyState:
+                    mongoose.connection.readyState
+
             });
         }
-
-        await mongoose.connection.db.command({
-            ping: 1
-        });
-
-        res.json({
-            success: true,
-            message: "MongoDB Connected Successfully",
-            readyState: mongoose.connection.readyState
-        });
-
-    } catch (error) {
-        console.error("DB TEST ERROR:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "MongoDB Connection Failed",
-            error: error.message,
-            readyState: mongoose.connection.readyState
-        });
     }
-});
-
+);
 
 // =====================================
 // UNIQUE REGISTRATION CODE
@@ -224,8 +292,8 @@ function generateRegistrationCode() {
             .toUpperCase();
 
     return "SYMPO26-" + random;
-
 }
+
 // =====================================
 // ADMIN LOGIN
 // =====================================
@@ -254,7 +322,6 @@ app.post(
                     "Invalid Username or Password"
 
             });
-
         }
 
         const token =
@@ -262,9 +329,10 @@ app.post(
 
         res.setHeader(
             "Set-Cookie",
-            `adminToken=${token}; HttpOnly; Path=/; Max-Age=28800; SameSite=Lax${process.env.NODE_ENV === "production"
-                ? "; Secure"
-                : ""
+            `adminToken=${token}; HttpOnly; Path=/; Max-Age=28800; SameSite=Lax${
+                process.env.NODE_ENV === "production"
+                    ? "; Secure"
+                    : ""
             }`
         );
 
@@ -272,13 +340,12 @@ app.post(
 
             success: true,
 
-            message: "Login successful"
+            message:
+                "Login successful"
 
         });
-
     }
 );
-
 
 // =====================================
 // ADMIN LOGOUT
@@ -293,12 +360,9 @@ app.post(
             "adminToken=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax"
         );
 
-        res.json({
-
+        return res.json({
             success: true
-
         });
-
     }
 );
 
@@ -306,9 +370,15 @@ app.post(
 // REGISTER STUDENT
 // =====================================
 
-app.post("/register", upload.none(), async (req, res) => {
+app.post(
+    "/register",
+    upload.none(),
+    async (req, res) => {
 
         try {
+
+            // IMPORTANT FOR VERCEL
+            await connectDB();
 
             const {
                 name,
@@ -322,7 +392,6 @@ app.post("/register", upload.none(), async (req, res) => {
                 payment,
                 transactionId
             } = req.body;
-
 
             // =====================================
             // REQUIRED FIELD VALIDATION
@@ -348,12 +417,10 @@ app.post("/register", upload.none(), async (req, res) => {
                         "Please fill all required fields"
 
                 });
-
             }
 
-
             // =====================================
-            // MOBILE NUMBER VALIDATION
+            // MOBILE VALIDATION
             // =====================================
 
             if (
@@ -368,17 +435,20 @@ app.post("/register", upload.none(), async (req, res) => {
                         "Please enter a valid 10 digit mobile number"
 
                 });
-
             }
 
+            // =====================================
+            // EMAIL
+            // =====================================
+
+            const normalizedEmail =
+                email
+                    .trim()
+                    .toLowerCase();
 
             // =====================================
-            // DUPLICATE EMAIL / MOBILE CHECK
+            // DUPLICATE CHECK
             // =====================================
-
-            console.time(
-                "DUPLICATE CHECK"
-            );
 
             const existingUser =
                 await Registration.findOne({
@@ -387,7 +457,7 @@ app.post("/register", upload.none(), async (req, res) => {
 
                         {
                             email:
-                                email.toLowerCase()
+                                normalizedEmail
                         },
 
                         {
@@ -399,16 +469,11 @@ app.post("/register", upload.none(), async (req, res) => {
 
                 });
 
-            console.timeEnd(
-                "DUPLICATE CHECK"
-            );
-
-
             if (existingUser) {
 
                 if (
                     existingUser.email ===
-                    email.toLowerCase()
+                    normalizedEmail
                 ) {
 
                     return res.status(409).json({
@@ -419,9 +484,7 @@ app.post("/register", upload.none(), async (req, res) => {
                             "This Email ID is already registered!"
 
                     });
-
                 }
-
 
                 if (
                     existingUser.mobile ===
@@ -436,53 +499,8 @@ app.post("/register", upload.none(), async (req, res) => {
                             "This Mobile Number is already registered!"
 
                     });
-
                 }
-
             }
-
-
-            // =====================================
-            // REGISTRATION CODE GENERATION
-            // =====================================
-
-            console.time(
-                "CODE GENERATION"
-            );
-
-            let registrationCode;
-
-            let codeExists = true;
-
-
-            while (codeExists) {
-
-                registrationCode =
-                    generateRegistrationCode();
-
-
-                const existingCode =
-                    await Registration.findOne({
-
-                        registrationCode:
-                            registrationCode
-
-                    });
-
-
-                if (!existingCode) {
-
-                    codeExists = false;
-
-                }
-
-            }
-
-
-            console.timeEnd(
-                "CODE GENERATION"
-            );
-
 
             // =====================================
             // EVENT PROCESSING
@@ -490,12 +508,10 @@ app.post("/register", upload.none(), async (req, res) => {
 
             let selectedEvents;
 
-
             if (Array.isArray(events)) {
 
                 selectedEvents =
                     events
-
                         .flatMap(
                             event =>
                                 String(event)
@@ -505,30 +521,22 @@ app.post("/register", upload.none(), async (req, res) => {
                                             e.trim()
                                     )
                         )
-
                         .filter(Boolean);
 
-            }
-
-            else {
+            } else {
 
                 selectedEvents =
                     String(events)
-
                         .split(",")
-
                         .map(
                             e =>
                                 e.trim()
                         )
-
                         .filter(Boolean);
-
             }
 
-
             // =====================================
-            // CREATE SCORE FOR EACH EVENT
+            // CREATE EVENT SCORES
             // =====================================
 
             const eventScores =
@@ -543,7 +551,6 @@ app.post("/register", upload.none(), async (req, res) => {
 
                     })
                 );
-
 
             // =====================================
             // PAYMENT VALIDATION
@@ -564,9 +571,33 @@ app.post("/register", upload.none(), async (req, res) => {
                         "Transaction ID must be exactly 12 digits."
 
                 });
-
             }
 
+            // =====================================
+            // REGISTRATION CODE
+            // =====================================
+
+            let registrationCode;
+
+            let codeExists = true;
+
+            while (codeExists) {
+
+                registrationCode =
+                    generateRegistrationCode();
+
+                const existingCode =
+                    await Registration.findOne({
+
+                        registrationCode:
+                            registrationCode
+
+                    });
+
+                if (!existingCode) {
+                    codeExists = false;
+                }
+            }
 
             // =====================================
             // CREATE REGISTRATION
@@ -576,16 +607,16 @@ app.post("/register", upload.none(), async (req, res) => {
                 new Registration({
 
                     name:
-                        name,
+                        name.trim(),
 
                     email:
-                        email.toLowerCase(),
+                        normalizedEmail,
 
                     mobile:
                         mobile,
 
                     college:
-                        college,
+                        college.trim(),
 
                     department:
                         department,
@@ -615,21 +646,16 @@ app.post("/register", upload.none(), async (req, res) => {
 
                 });
 
-
             // =====================================
             // SAVE TO MONGODB
             // =====================================
 
-            console.time(
-                "MONGODB SAVE"
-            );
-
             await newRegistration.save();
 
-            console.timeEnd(
-                "MONGODB SAVE"
+            console.log(
+                "Registration saved successfully:",
+                registrationCode
             );
-
 
             // =====================================
             // EMAIL HTML
@@ -695,9 +721,8 @@ app.post("/register", upload.none(), async (req, res) => {
 
 `;
 
-
             // =====================================
-            // SEND CONFIRMATION EMAIL
+            // BREVO EMAIL
             // =====================================
 
             try {
@@ -707,54 +732,82 @@ app.post("/register", upload.none(), async (req, res) => {
                     email
                 );
 
+                const response =
+                    await fetch(
+                        "https://api.brevo.com/v3/smtp/email",
+                        {
+                            method: "POST",
 
-                const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: {
-        "accept": "application/json",
-        "api-key": process.env.BREVO_API_KEY,
-        "content-type": "application/json"
-    },
-    body: JSON.stringify({
-        sender: {
-            name: "NEXORA 2026",
-            email: process.env.EMAIL_FROM
-        },
-        to: [
-            {
-                email: email
-            }
-        ],
-        subject: "NEXORA 2026 - Registration Confirmation",
-        htmlContent: emailHtml
-    })
-});
+                            headers: {
 
-const result = await response.json();
+                                "accept":
+                                    "application/json",
 
-if (!response.ok) {
-    throw new Error(JSON.stringify(result));
-}
+                                "api-key":
+                                    process.env.BREVO_API_KEY,
 
-console.log(
-    "Confirmation email sent successfully:",
-    result.messageId
-);
+                                "content-type":
+                                    "application/json"
 
-            }
+                            },
 
-            catch (emailError) {
+                            body:
+                                JSON.stringify({
+
+                                    sender: {
+
+                                        name:
+                                            "NEXORA 2026",
+
+                                        email:
+                                            process.env.EMAIL_FROM
+
+                                    },
+
+                                    to: [
+
+                                        {
+                                            email:
+                                                email
+                                        }
+
+                                    ],
+
+                                    subject:
+                                        "NEXORA 2026 - Registration Confirmation",
+
+                                    htmlContent:
+                                        emailHtml
+
+                                })
+                        }
+                    );
+
+                const result =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        JSON.stringify(result)
+                    );
+                }
+
+                console.log(
+                    "Confirmation email sent successfully:",
+                    result.messageId
+                );
+
+            } catch (emailError) {
 
                 console.error(
                     "EMAIL ERROR:",
-                    emailError
+                    emailError.message
                 );
-
             }
 
-
             // =====================================
-            // SUCCESS RESPONSE
+            // SUCCESS
             // =====================================
 
             return res.status(201).json({
@@ -769,20 +822,12 @@ console.log(
 
             });
 
-        }
+        } catch (error) {
 
-
-        // =====================================
-        // REGISTRATION ERROR
-        // =====================================
-
-        catch (error) {
-
-            console.log(
+            console.error(
                 "Registration Error:",
                 error
             );
-
 
             if (
                 error.code === 11000
@@ -796,25 +841,24 @@ console.log(
                         "Email or Mobile Number is already registered!"
 
                 });
-
             }
-
 
             return res.status(500).json({
 
                 success: false,
 
                 message:
-                    "Something went wrong. Please try again."
+                    "Something went wrong. Please try again.",
+
+                error:
+                    process.env.NODE_ENV === "production"
+                        ? undefined
+                        : error.message
 
             });
-
         }
-
     }
 );
-
-
 
 // =====================================
 // UPDATE ATTENDANCE
@@ -824,13 +868,15 @@ app.put(
     "/api/attendance",
     adminAuth,
     async (req, res) => {
+
         try {
+
+            await connectDB();
 
             const {
                 studentId,
                 attendance
             } = req.body;
-
 
             if (
                 !studentId ||
@@ -845,9 +891,7 @@ app.put(
                         "Student ID and attendance are required"
 
                 });
-
             }
-
 
             if (
                 attendance !== "Present" &&
@@ -862,9 +906,7 @@ app.put(
                         "Invalid attendance status"
 
                 });
-
             }
-
 
             const student =
                 await Registration.findByIdAndUpdate(
@@ -882,7 +924,6 @@ app.put(
 
                 );
 
-
             if (!student) {
 
                 return res.status(404).json({
@@ -893,11 +934,9 @@ app.put(
                         "Student not found"
 
                 });
-
             }
 
-
-            res.json({
+            return res.json({
 
                 success: true,
 
@@ -909,16 +948,14 @@ app.put(
 
             });
 
-        }
+        } catch (error) {
 
-        catch (error) {
-
-            console.log(
+            console.error(
                 "Attendance Error:",
                 error
             );
 
-            res.status(500).json({
+            return res.status(500).json({
 
                 success: false,
 
@@ -926,9 +963,7 @@ app.put(
                     "Unable to update attendance"
 
             });
-
         }
-
     }
 );
 
@@ -940,7 +975,10 @@ app.get(
     "/api/registrations",
     adminAuth,
     async (req, res) => {
+
         try {
+
+            await connectDB();
 
             const registrations =
                 await Registration
@@ -949,8 +987,7 @@ app.get(
                         createdAt: -1
                     });
 
-
-            res.json({
+            return res.json({
 
                 success: true,
 
@@ -959,11 +996,14 @@ app.get(
 
             });
 
-        }
+        } catch (error) {
 
-        catch (error) {
+            console.error(
+                "Get Registrations Error:",
+                error
+            );
 
-            res.status(500).json({
+            return res.status(500).json({
 
                 success: false,
 
@@ -971,12 +1011,9 @@ app.get(
                     "Unable to fetch registrations"
 
             });
-
         }
-
     }
 );
-
 
 // =====================================
 // GET EVENT PARTICIPANTS
@@ -986,13 +1023,15 @@ app.get(
     "/api/event/:eventName",
     adminAuth,
     async (req, res) => {
+
         try {
+
+            await connectDB();
 
             const eventName =
                 decodeURIComponent(
                     req.params.eventName
                 );
-
 
             const participants =
                 await Registration.find({
@@ -1002,20 +1041,18 @@ app.get(
 
                 });
 
-
             const formattedParticipants =
                 participants.map(
-                    (participant) => {
+                    participant => {
 
                         const scoreData =
                             participant.scores.find(
 
-                                (item) =>
+                                item =>
                                     item.event ===
                                     eventName
 
                             );
-
 
                         return {
 
@@ -1035,18 +1072,15 @@ app.get(
                                 participant.registrationCode,
 
                             score:
-
                                 scoreData
                                     ? scoreData.score
                                     : null
 
                         };
-
                     }
                 );
 
-
-            res.json({
+            return res.json({
 
                 success: true,
 
@@ -1055,11 +1089,14 @@ app.get(
 
             });
 
-        }
+        } catch (error) {
 
-        catch (error) {
+            console.error(
+                "Event Participants Error:",
+                error
+            );
 
-            res.status(500).json({
+            return res.status(500).json({
 
                 success: false,
 
@@ -1067,15 +1104,12 @@ app.get(
                     "Unable to fetch event participants"
 
             });
-
         }
-
     }
 );
 
-
 // =====================================
-// SAVE SCORE FOR SPECIFIC EVENT
+// SAVE SCORE
 // =====================================
 
 app.put(
@@ -1085,23 +1119,18 @@ app.put(
 
         try {
 
+            await connectDB();
+
             const {
-
                 studentId,
-
                 event,
-
                 score
-
             } = req.body;
 
-
             if (
-
                 !studentId ||
                 !event ||
                 score === undefined
-
             ) {
 
                 return res.status(400).json({
@@ -1112,13 +1141,10 @@ app.put(
                         "Student, event and score are required"
 
                 });
-
             }
-
 
             const numericScore =
                 Number(score);
-
 
             if (
                 isNaN(numericScore)
@@ -1132,15 +1158,12 @@ app.put(
                         "Score must be a number"
 
                 });
-
             }
-
 
             const student =
                 await Registration.findById(
                     studentId
                 );
-
 
             if (!student) {
 
@@ -1152,18 +1175,16 @@ app.put(
                         "Student not found"
 
                 });
-
             }
-
 
             const scoreIndex =
                 student.scores.findIndex(
 
-                    (item) =>
-                        item.event === event
+                    item =>
+                        item.event ===
+                        event
 
                 );
-
 
             if (
                 scoreIndex !== -1
@@ -1185,14 +1206,11 @@ app.put(
                         numericScore
 
                 });
-
             }
-
 
             await student.save();
 
-
-            res.json({
+            return res.json({
 
                 success: true,
 
@@ -1201,13 +1219,14 @@ app.put(
 
             });
 
-        }
+        } catch (error) {
 
-        catch (error) {
+            console.error(
+                "Score Error:",
+                error
+            );
 
-            console.log(error);
-
-            res.status(500).json({
+            return res.status(500).json({
 
                 success: false,
 
@@ -1215,15 +1234,12 @@ app.put(
                     "Unable to save score"
 
             });
-
         }
-
     }
 );
 
-
 // =====================================
-// GET TOP 3 WINNERS FOR EVENT
+// TOP 3 WINNERS
 // =====================================
 
 app.get(
@@ -1233,11 +1249,12 @@ app.get(
 
         try {
 
+            await connectDB();
+
             const eventName =
                 decodeURIComponent(
                     req.params.eventName
                 );
-
 
             const participants =
                 await Registration.find({
@@ -1247,67 +1264,55 @@ app.get(
 
                 });
 
-
             const scoredParticipants =
                 participants
-                    .map(
-                        (student) => {
 
-                            const eventScore =
-                                student.scores.find(
+                    .map(student => {
 
-                                    (item) =>
-                                        item.event ===
-                                        eventName
+                        const eventScore =
+                            student.scores.find(
 
-                                );
+                                item =>
+                                    item.event ===
+                                    eventName
 
+                            );
 
-                            return {
+                        return {
 
-                                name:
-                                    student.name,
+                            name:
+                                student.name,
 
-                                college:
-                                    student.college,
+                            college:
+                                student.college,
 
-                                department:
-                                    student.department,
+                            department:
+                                student.department,
 
-                                registrationCode:
-                                    student.registrationCode,
+                            registrationCode:
+                                student.registrationCode,
 
-                                score:
+                            score:
+                                eventScore
+                                    ? eventScore.score
+                                    : null
 
-                                    eventScore
-                                        ? eventScore.score
-                                        : null
-
-                            };
-
-                        }
-                    )
-
-                    // SCORE ENTER PANNAVANGA MATTUM
+                        };
+                    })
 
                     .filter(
-                        (student) =>
+                        student =>
                             student.score !== null
                     )
-
-                    // HIGHEST SCORE FIRST
 
                     .sort(
                         (a, b) =>
                             b.score - a.score
                     )
 
-                    // TOP 3
-
                     .slice(0, 3);
 
-
-            res.json({
+            return res.json({
 
                 success: true,
 
@@ -1319,11 +1324,14 @@ app.get(
 
             });
 
-        }
+        } catch (error) {
 
-        catch (error) {
+            console.error(
+                "Winners Error:",
+                error
+            );
 
-            res.status(500).json({
+            return res.status(500).json({
 
                 success: false,
 
@@ -1331,12 +1339,9 @@ app.get(
                     "Unable to get winners"
 
             });
-
         }
-
     }
 );
-
 
 // =====================================
 // DELETE REGISTRATION
@@ -1349,11 +1354,12 @@ app.delete(
 
         try {
 
+            await connectDB();
+
             const registration =
                 await Registration.findByIdAndDelete(
                     req.params.id
                 );
-
 
             if (!registration) {
 
@@ -1365,11 +1371,9 @@ app.delete(
                         "Registration not found"
 
                 });
-
             }
 
-
-            res.json({
+            return res.json({
 
                 success: true,
 
@@ -1378,11 +1382,14 @@ app.delete(
 
             });
 
-        }
+        } catch (error) {
 
-        catch (error) {
+            console.error(
+                "Delete Registration Error:",
+                error
+            );
 
-            res.status(500).json({
+            return res.status(500).json({
 
                 success: false,
 
@@ -1390,11 +1397,10 @@ app.delete(
                     "Unable to delete registration"
 
             });
-
         }
-
     }
 );
+
 // =====================================
 // EXPORT REGISTRATIONS TO EXCEL
 // =====================================
@@ -1406,13 +1412,14 @@ app.get(
 
         try {
 
+            await connectDB();
+
             const registrations =
                 await Registration
                     .find()
                     .sort({
                         createdAt: -1
                     });
-
 
             const excelData =
                 registrations.map(
@@ -1451,13 +1458,13 @@ app.get(
                             student.payment,
 
                         "Attendance":
-                            student.attendance || "Absent",
+                            student.attendance ||
+                            "Absent",
 
                         "Registration ID":
                             student.registrationCode,
 
                         "Registration Date":
-
                             student.createdAt
                                 ? new Date(
                                     student.createdAt
@@ -1467,61 +1474,54 @@ app.get(
                     })
                 );
 
-
             const workbook =
                 XLSX.utils.book_new();
-
 
             const worksheet =
                 XLSX.utils.json_to_sheet(
                     excelData
                 );
 
-
             XLSX.utils.book_append_sheet(
-
                 workbook,
-
                 worksheet,
-
                 "Registrations"
-
             );
 
+            const fileName =
+                "NEXORA_2026_Registrations.xlsx";
 
-            const fileName = "NEXORA_2026_Registrations.xlsx";
+            const excelBuffer =
+                XLSX.write(
+                    workbook,
+                    {
+                        type: "buffer",
+                        bookType: "xlsx"
+                    }
+                );
 
-const excelBuffer =
-    XLSX.write(
-        workbook,
-        {
-            type: "buffer",
-            bookType: "xlsx"
-        }
-    );
+            res.setHeader(
+                "Content-Type",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            );
 
-res.setHeader(
-    "Content-Type",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-);
+            res.setHeader(
+                "Content-Disposition",
+                `attachment; filename="${fileName}"`
+            );
 
-res.setHeader(
-    "Content-Disposition",
-    `attachment; filename="${fileName}"`
-);
+            return res.send(
+                excelBuffer
+            );
 
-res.send(excelBuffer);
-        }
+        } catch (error) {
 
-        catch (error) {
-
-            console.log(
+            console.error(
                 "Excel Export Error:",
                 error
             );
 
-
-            res.status(500).json({
+            return res.status(500).json({
 
                 success: false,
 
@@ -1529,9 +1529,7 @@ res.send(excelBuffer);
                     "Unable to export Excel file"
 
             });
-
         }
-
     }
 );
 
@@ -1547,11 +1545,12 @@ app.use(
         next
     ) => {
 
-        console.log(
-            error.message
+        console.error(
+            "SERVER ERROR:",
+            error
         );
 
-        res.status(400).json({
+        return res.status(400).json({
 
             success: false,
 
@@ -1559,22 +1558,32 @@ app.use(
                 error.message
 
         });
-
     }
 );
 
+// =====================================
+// LOCAL SERVER
+// =====================================
+
+if (require.main === module) {
+
+    const PORT =
+        process.env.PORT || 5000;
+
+    app.listen(
+        PORT,
+        () => {
+
+            console.log(
+                `Server running on http://localhost:${PORT}`
+            );
+
+        }
+    );
+}
 
 // =====================================
-// START SERVER
+// VERCEL EXPORT
 // =====================================
 
-app.listen(
-    PORT,
-    () => {
-
-        console.log(
-            `Server running on http://localhost:${PORT}`
-        );
-
-    }
-);
+module.exports = app;
