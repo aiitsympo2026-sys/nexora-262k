@@ -23,7 +23,229 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 800);
 
     }, 5000);
+/* ==========================================
+   PAGE 2 - 3D COLLEGE SLIDESHOW
+========================================== */
 
+const galleryPhotos =
+    document.querySelectorAll(".gallery-photo");
+
+const photoNumber =
+    document.getElementById("photoNumber");
+
+let currentPhoto = 0;
+
+if (galleryPhotos.length > 0) {
+
+    function updateGallery() {
+
+        galleryPhotos.forEach(function (photo, index) {
+
+            photo.classList.remove(
+                "active",
+                "prev",
+                "next"
+            );
+
+            if (index === currentPhoto) {
+                photo.classList.add("active");
+            }
+
+            if (
+                index ===
+                (currentPhoto - 1 + galleryPhotos.length)
+                % galleryPhotos.length
+            ) {
+                photo.classList.add("prev");
+            }
+
+            if (
+                index ===
+                (currentPhoto + 1)
+                % galleryPhotos.length
+            ) {
+                photo.classList.add("next");
+            }
+
+        });
+
+        if (photoNumber) {
+            photoNumber.textContent =
+                String(currentPhoto + 1).padStart(2, "0");
+        }
+    }
+
+    updateGallery();
+
+    setInterval(function () {
+
+        currentPhoto =
+            (currentPhoto + 1) % galleryPhotos.length;
+
+        updateGallery();
+
+    }, 3500);
+}
+/* ==========================================
+   PAGE 2 - HOD INFO
+========================================== */
+
+const hodInfoButton =
+    document.getElementById("hodInfoButton");
+
+const hodDetails =
+    document.getElementById("hodDetails");
+
+if (hodInfoButton && hodDetails) {
+
+    hodInfoButton.addEventListener(
+        "click",
+        function () {
+
+            hodDetails.classList.toggle("hidden");
+
+            if (
+                hodDetails.classList.contains("hidden")
+            ) {
+
+                hodInfoButton.textContent =
+                    "ℹ HOD INFO";
+
+            } else {
+
+                hodInfoButton.textContent =
+                    "✕ CLOSE HOD INFO";
+
+            }
+
+        }
+    );
+
+}
+/* ==========================================
+   PAGE 2 - COUNTDOWN
+========================================== */
+
+// CHANGE THIS DATE & TIME
+const targetDate = new Date("2026-09-30T10:00:00+05:30").getTime();
+
+
+function updateCountdown() {
+
+    const now =
+        new Date().getTime();
+
+    const difference =
+    targetDate - now;
+
+    if (difference <= 0) {
+
+        document.getElementById("days").textContent =
+            "00";
+
+        document.getElementById("hours").textContent =
+            "00";
+
+        document.getElementById("minutes").textContent =
+            "00";
+
+        document.getElementById("seconds").textContent =
+            "00";
+
+        return;
+
+    }
+
+
+    const days =
+        Math.floor(
+            difference /
+            (1000 * 60 * 60 * 24)
+        );
+
+    const hours =
+        Math.floor(
+            (difference %
+                (1000 * 60 * 60 * 24)) /
+                (1000 * 60 * 60)
+        );
+
+    const minutes =
+        Math.floor(
+            (difference %
+                (1000 * 60 * 60)) /
+                (1000 * 60)
+        );
+
+    const seconds =
+        Math.floor(
+            (difference %
+                (1000 * 60)) /
+                1000
+        );
+
+
+    document.getElementById("days").textContent =
+        String(days).padStart(2, "0");
+
+    document.getElementById("hours").textContent =
+        String(hours).padStart(2, "0");
+
+    document.getElementById("minutes").textContent =
+        String(minutes).padStart(2, "0");
+
+    document.getElementById("seconds").textContent =
+        String(seconds).padStart(2, "0");
+
+}
+
+updateCountdown();
+
+setInterval(
+    updateCountdown,
+    1000
+);
+
+
+/* ==========================================
+   PAGE 2 → MAIN PAGE (REGISTRATION PAGE)
+========================================== */
+
+const goToRegistration =
+    document.getElementById("goToRegistration");
+
+const page2 =
+    document.getElementById("page2");
+
+const mainPage =
+    document.getElementById("mainPage");
+
+if (
+    goToRegistration &&
+    page2 &&
+    mainPage
+) {
+    goToRegistration.addEventListener(
+        "click",
+        function () {
+
+            page2.classList.add(
+                "page2-fade-out"
+            );
+
+            setTimeout(function () {
+
+                page2.style.display = "none";
+
+                mainPage.classList.add("show-registration");
+
+                window.scrollTo(0, 0);
+
+            }, 700);
+
+        }
+    );
+}
 
     /* =====================================
        EVENT TABS
@@ -142,7 +364,170 @@ nonTechnicalCheckboxes.forEach(function (checkbox) {
 });
 
 
+/* =====================================
+   EVENT INFO GUIDELINES
+===================================== */
 
+const eventGuidelines = {
+
+    perspecta: {
+        title: "💻 PERSPECTA",
+        content: `
+            <ul>
+                <li>Each team should have 2 or 3 members.</li>
+                <li>PPT should contain a maximum of 10 to 15 slides.</li>
+                <li>The idea must be creative, innovative, clear, and concise.</li>
+                <li>10 minutes are allotted for presentation, followed by a Q&A session.</li>
+                <li>Participants must follow formal dress code, time management, and professional behaviour.</li>
+            </ul>
+        `
+    },
+
+    bitcrux: {
+        title: "💻 BITCRUX",
+        content: `
+            <ul>
+                <li>Participants must use their own HackerRank account.</li>
+                <li>The competition duration in 1hr.</li>
+                <li>Participants must debug programs with Syntax, Logical, and Runtime Errors.</li>
+                <li>Copying, collaboration, or sharing questions/solutions/screenshots is strictly prohibited.</li>
+                <li>Evaluation is based on test cases successfully passed; in case of a tie, lower submission time wins.</li>
+            </ul>
+        `
+    },
+
+    vizzard: {
+        title: "💻 VIZZARD",
+        content: `
+            <ul>
+                <li>Participants will be provided with 3 datasets and questions for each dataset.</li>
+                <li>Participants must create a suitable Power BI dashboard and answer the given questions.</li>
+                <li>Each team can have 1 to 3 members.</li>
+                <li>The total event duration is 1 hour 10 minutes, and participants must complete at least 2 datasets.</li>
+                <li>Evaluation will consider accuracy, number of datasets completed, visualizations, dashboard clarity, and quality of insights.</li>
+            </ul>
+        `
+    },
+
+    mystery: {
+        title: "🎭 MYSTERY MISSION",
+        content: `
+            <ul>
+                <li>Objects/clues are displayed only once.</li>
+                <li>Participants must work independently.</li>
+                <li>Marks depend on accuracy and time.</li>
+                <li>No external assistance or discussion.</li>
+                <li>Judges decision is final. </li>
+            </ul>
+        `
+    },
+
+    voice: {
+        title: "🎤 VOICE CLASH",
+        content: `
+            <ul>
+                <li>The topic is given by the organizers.</li>
+                <li>Participants are assigned For or Against.</li>
+                <li>Each participant has a fixed speaking time.</li>
+                <li>Personal attacks, offensive language, and interruptions are not allowed.</li>
+                <li>Evaluation is based on content, relevance, clarity, confidence, and presentation.</li>
+            </ul>
+        `
+    },
+
+    mind: {
+        title: "🧠 MIND TRACK",
+        content: `
+            <ul>
+                <li>The item list is displayed only once.</li>
+                <li>Participants must observe and remember the items.</li>
+                <li>Items must be arranged in the same order.</li>
+                <li>No assistance or communication is allowed.</li>
+                <li>Evaluation is based on accuracy and completion time.</li>
+            </ul>
+        `
+    }
+
+};
+
+
+/* =====================================
+   OPEN EVENT INFO
+===================================== */
+
+window.showEventInfo = function (eventName) {
+
+    const event = eventGuidelines[eventName];
+
+    if (!event) {
+        console.error("Event not found:", eventName);
+        return;
+    }
+
+    const modal =
+        document.getElementById("eventInfoModal");
+
+    const title =
+        document.getElementById("eventInfoTitle");
+
+    const content =
+        document.getElementById("eventInfoContent");
+
+    if (!modal || !title || !content) {
+        console.error("Event Info HTML not found");
+        return;
+    }
+
+    title.innerHTML = event.title;
+
+    content.innerHTML = event.content;
+
+    modal.classList.add("show");
+
+};
+
+
+/* =====================================
+   CLOSE EVENT INFO
+===================================== */
+
+window.closeEventInfo = function () {
+
+    const modal =
+        document.getElementById("eventInfoModal");
+
+    if (modal) {
+
+        modal.classList.remove("show");
+
+    }
+
+};
+
+
+/* =====================================
+   CLOSE EVENT INFO - OUTSIDE CLICK
+===================================== */
+
+const eventInfoModal =
+    document.getElementById("eventInfoModal");
+
+if (eventInfoModal) {
+
+    eventInfoModal.addEventListener(
+        "click",
+        function (e) {
+
+            if (e.target === eventInfoModal) {
+
+                closeEventInfo();
+
+            }
+
+        }
+    );
+
+}
     /* =====================================
        PAYMENT OPTION
     ===================================== */
@@ -275,7 +660,6 @@ nonTechnicalCheckboxes.forEach(function (checkbox) {
                 return;
 
             }
-
 
             /* ===============================
                MOBILE VALIDATION
@@ -601,4 +985,30 @@ function toggleOtherDepartment() {
         otherDepartment.required = false;
         otherDepartment.value = "";
     }
+}
+/* =====================================
+   SUCCESS MODAL
+===================================== */
+
+const successModal = document.getElementById("successModal");
+const successCloseBtn = document.getElementById("successCloseBtn");
+
+if (successCloseBtn && successModal) {
+
+    successCloseBtn.addEventListener("click", function () {
+        successModal.classList.add("hidden");
+    });
+
+}
+
+if (successModal) {
+
+    successModal.addEventListener("click", function (e) {
+
+        if (e.target === successModal) {
+            successModal.classList.add("hidden");
+        }
+
+    });
+
 }
